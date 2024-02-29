@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-require "debug"
 
 score = ARGV[0]
 score = score.split(',')
@@ -23,7 +22,7 @@ score.each do |s|
     end
 
   end
-  
+
 end
 
 #最後の10回目は場合によっては３回になる
@@ -37,13 +36,16 @@ if frames.length == 11
   frames.pop
 end
 
+
 point = 0
 count = 0
+ #ストライクの場合は次のframeの合計を加算
+ #スペアの場合は次のframeの一回目の点数を加算
 frames.each do |frame|
   if frame.length == 2
-    if frame[0] == 10 #ストライクの場合は次のframeの合計を加算
+    if frame[0] == 10
       point += frame.sum + frames[count + 1][0] + frames[count + 1][1]
-    elsif frame.sum == 10 #スペアの場合は次のframeの一回目の点数を加算
+    elsif frame.sum == 10 
       point += frame.sum + frames[count + 1][0]
     else
     point += frame.sum
