@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "debug"
 
 require_relative './lib/reversi_methods'
 
