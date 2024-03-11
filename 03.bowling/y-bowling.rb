@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 
 score = ARGV[0]
 score = score.split(',')
