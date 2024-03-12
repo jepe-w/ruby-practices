@@ -1,12 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-
 score = ARGV[0]
-score = score.split(',')
+split_score = score.split(',')
 shots = []
 
-score.each do |s|
+split_score.each do |s|
   if shots.length < 18
     if s == 'X'
       shots << 10
@@ -28,27 +27,27 @@ shots.each_slice(2) do |s|
   frames << s
 end
 
-if frames.length == 11
-  frames[9] += frames[10]
-  frames.pop
-end
+frames[9] += frames.pop if frames.length == 11
 
 point = 0
-count = 0
-frames.each do |frame|
-  point += if frame.length == 2 && frame[0] == 10
-             if frames[count + 1].length == 3
-               10 + frames[count + 1][0] + frames[count + 1][1]
-             elsif frames[count + 1][0] == 10
-               10 + 10 + frames[count + 2][0]
+frames.each_with_index do |frame, i|
+  next_frame = frames[i + 1]
+  not_last_frame = frame.length == 2
+  strilke = frame[0] == 10
+  spare = frame.sum == 10
+
+  point += if not_last_frame && strilke
+             if next_frame.length == 3
+               10 + next_frame[0..1].sum
+             elsif next_frame[0] == 10
+               10 + 10 + frames[i + 2][0]
              else
-               10 + frames[count + 1][0] + frames[count + 1][1]
+               10 + next_frame.sum
              end
-           elsif frame.length == 2 && frame.sum == 10
-             frame.sum + frames[count + 1][0]
+           elsif not_last_frame && spare
+             frame.sum + next_frame[0]
            else
              frame.sum
            end
-  count += 1
 end
 puts point
