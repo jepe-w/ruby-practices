@@ -8,27 +8,27 @@ def create_calendar
   target_month = Date.today.mon
   option = {}
 
-  opt.on('-y Integer') { 
-    |y| option[:y] = y
-    target_year = option[:y]
-  }
-  opt.on('-m Integer') { 
-    |m| option[:m] = m
-    target_month = option[:m]}
+  opt.on('-y Integer') do |y| 
+    target_year = y
+  end
+
+  opt.on('-m Integer') do |m| 
+    target_month = m
+  end
   opt.parse!(ARGV)
   
   first_day = Date.new(target_year.to_i, target_month.to_i, 1)
-  month_day = Date.new(target_year.to_i, target_month.to_i, -1).day
+  last_day = Date.new(target_year.to_i, target_month.to_i, -1).day
   day_of_week = first_day.wday
   
-  #曜日ぶんから文字を挿入（初日のスタート位置（曜日）をとるため）
   days = []
   day_of_week.times do
     days.push("  ")
   end
-  #その月の日数分daysに日にちを追加
-  1.upto(month_day) do |d|
-    if d < 10
+
+  1.upto(last_day) do |d|
+    single_digit_date = d < 10
+    if single_digit_date
       days.push(" #{d}")
     else
       days.push(d)
