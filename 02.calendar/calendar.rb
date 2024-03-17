@@ -17,18 +17,18 @@ def create_calendar
   end
   opt.parse!(ARGV)
   
-  first_day = Date.new(target_year.to_i, target_month.to_i, 1)
-  last_day = Date.new(target_year.to_i, target_month.to_i, -1).day
-  day_of_week = first_day.wday
+  first_date = Date.new(target_year.to_i, target_month.to_i, 1)
+  last_day = Date.new(target_year.to_i, target_month.to_i, -1)
+  day_of_week = first_date.wday
   
   days = []
   day_of_week.times do
     days.push("  ")
   end
 
-  1.upto(last_day) do |d|
-    single_digit_date = d < 10
-    if single_digit_date
+  1.upto(last_day.day) do |d|
+    is_single_digit_date = d < 10
+    if is_single_digit_date
       days.push(" #{d}")
     else
       days.push(d)
@@ -36,7 +36,7 @@ def create_calendar
   end
 
   week = days.each_slice(7).to_a
-  puts first_day.strftime("%B %Y").center(20)
+  puts first_date.strftime("%B %Y").center(20)
   puts ("日 月 火 水 木 金 土")
   week.each{ |day| puts day.join(" ") }
 end
