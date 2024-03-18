@@ -18,7 +18,7 @@ def create_calendar
   opt.parse!(ARGV)
   
   first_date = Date.new(target_year.to_i, target_month.to_i, 1)
-  last_day = Date.new(target_year.to_i, target_month.to_i, -1)
+  last_date = Date.new(target_year.to_i, target_month.to_i, -1)
   day_of_week = first_date.wday
   
   days = []
@@ -26,7 +26,7 @@ def create_calendar
     days.push("  ")
   end
 
-  1.upto(last_day.day) do |d|
+  1.upto(last_date.day) do |d|
     is_single_digit_date = d < 10
     if is_single_digit_date
       days.push(" #{d}")
