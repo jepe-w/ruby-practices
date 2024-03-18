@@ -30,22 +30,23 @@ class Reversi
       end
 
       print "command? (#{@current_stone == WHITE_STONE ? '白○' : '黒●'}) > "
-      command = gets.chomp
-      break if QUIT_COMMANDS.include?(command)
+      @command = gets.chomp
+      break if QUIT_COMMANDS.include?(@command)
 
-      begin
-        if put_stone(@board, command, @current_stone)
-          puts '配置成功、次のターン'
-          toggle_stone
-        else
-          puts '配置失敗、ターン据え置き'
-        end
-      rescue StandardError => e
-        puts "ERROR: #{e.message}"
-      end
+      put_judge
     end
-
     puts 'finished!'
+  end
+
+  def put_judge
+    if put_stone(@board, @command, @current_stone)
+      puts '配置成功、次のターン'
+      toggle_stone
+    else
+      puts '配置失敗、ターン据え置き'
+    end
+  rescue StandardError => e
+    puts "ERROR: #{e.message}"
   end
 
   private
