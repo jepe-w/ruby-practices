@@ -2,16 +2,14 @@
 # frozen_string_literal: true
 
 def title_chars_count
-  Dir.foreach('.').select { !/\A\..*/.match?(_1) }.map { _1.length }
-
+  Dir.foreach('.').reject { /\A\..*/.match?(_1) }.map(&:length)
 end
 
 word_count = title_chars_count
 max_char_number = word_count.max
 
 def directories_and_filles_get(max_char_number)
-  Dir.foreach('.').select { !/\A\..*/.match?(_1) }.map { _1.ljust(max_char_number) }
-
+  Dir.foreach('.').reject { /\A\..*/.match?(_1) }.map { _1.ljust(max_char_number) }
 end
 
 element_count_number = directories_and_filles_get(max_char_number).length
@@ -20,7 +18,7 @@ sort_directories_and_folder_list = directories_and_filles_get(max_char_number).s
 def output_directories(row_num, sort_directories_and_folder_list, element_count_number)
   _, surplus_num = element_count_number.divmod(row_num)
   exact_num = surplus_num + 1 unless surplus_num.zero?
-  output_arrays = exact_num.times.map { [] }
+  output_arrays = Array.new(exact_num) { [] }
 
   sort_directories_and_folder_list.each_with_index do |v, i|
     _, exact_num_count = i.divmod(exact_num)
