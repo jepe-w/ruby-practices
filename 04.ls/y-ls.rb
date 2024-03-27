@@ -13,16 +13,16 @@ def contents_get(max_char_number)
 end
 
 element_count_number = contents_get(max_char_number).length
-sort_directories_and_folder_list = contents_get(max_char_number).sort
+sort_contents = contents_get(max_char_number).sort
 
-def output_directories(row_num, sort_directories_and_folder_list, element_count_number)
+def output_directories(row_num, sort_contents, element_count_number)
   if element_count_number < ROW_NUM
-    puts sort_directories_and_folder_list.join('  ')
+    puts sort_contents.join('  ')
   else
     surplus_num = element_count_number % row_num
     rows_num_to_make = surplus_num + 1 unless surplus_num.zero?
     output_arrays = Array.new(rows_num_to_make) { [] }
-    sort_directories_and_folder_list.each_with_index do |v, i|
+    sort_contents.each_with_index do |v, i|
       rows_num_to_push = i % rows_num_to_make
 
       output_arrays[rows_num_to_push].push(v)
@@ -33,4 +33,4 @@ end
 
 ROW_NUM = 3
 
-output_directories(ROW_NUM, sort_directories_and_folder_list, element_count_number)
+output_directories(ROW_NUM, sort_contents, element_count_number)
