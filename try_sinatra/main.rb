@@ -13,14 +13,19 @@ get '/hello/*' do |name|
 	"hello #{name}. how are you?"
 end
 
-get '/erb_template_page' do
-	erb :erb_template_page
+get '/items' do |number|
+	erb :items
 end
 
-get '/markdown_template_page' do
-	markdown :markdown_template_page
-end
 
-get '/erb_and_md_template_page' do
-	erb :erb_and_md_template_page
-end
+# get '/erb_template_page' do
+# 	erb :erb_template_page
+# end
+
+# get '/markdown_template_page' do
+# 	markdown :markdown_template_page
+# end
+
+# get '/erb_and_md_template_page' do
+# 	erb :erb_and_md_template_page
+# end
