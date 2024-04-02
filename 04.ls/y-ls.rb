@@ -1,29 +1,26 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-def contents_checker
+def filenames
   Dir.foreach('.').reject { _1.start_with?('.') }
 end
 
-title_chars_count = contents_checker.map { |item| item.encode('EUC-JP').bytesize }
-max_char_number = title_chars_count.max
-contents_get = contents_checker.map do |item|
-  brunk_char_number = max_char_number - item.encode('EUC-JP').bytesize
-  item + ' ' * brunk_char_number
-end
-element_count_number = contents_get.length
-sort_contents = contents_get.sort
+title_chars_count = filenames.map(&:length)
+max_char_count = title_chars_count.max
+filename_processed_for_output = filenames.map { _1.ljust(max_char_count) }
+element_count = filename_processed_for_output.length
+sort_filename = filename_processed_for_output.sort
 ROW_NUM = 3
 
-def output_directories(row_num, sort_contents, element_count_number)
-  if element_count_number <= row_num
-    puts sort_contents.join('  ')
+def output_directories(row_num, sort_filename, element_count)
+  if element_count <= row_num
+    puts sort_filename.join('  ')
   else
-    column_num, surplus_num = element_count_number.divmod(row_num)
+    column_num, surplus_num = element_count.divmod(row_num)
     rows_num_to_make = column_num + 1 unless surplus_num.zero?
     output_arrays = Array.new(rows_num_to_make) { [] }
 
-    sort_contents.each_with_index do |v, i|
+    sort_filename.each_with_index do |v, i|
       rows_num_to_push = i % rows_num_to_make
       output_arrays[rows_num_to_push].push(v)
     end
@@ -32,4 +29,4 @@ def output_directories(row_num, sort_contents, element_count_number)
   end
 end
 
-output_directories(ROW_NUM, sort_contents, element_count_number)
+output_directories(ROW_NUM, sort_filename, element_count_number)
