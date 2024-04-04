@@ -29,4 +29,4 @@ def output_directories(row_num, sort_filename, element_count)
   end
 end
 
-output_directories(ROW_NUM, sort_filename, element_count_number)
+output_directories(ROW_NUM, sort_filename, element_count)
