@@ -16,8 +16,8 @@ def output_directories(row_num, sort_filename, element_count)
   if element_count <= row_num
     puts sort_filename.join('  ')
   else
-    column_num, surplus_num = element_count.divmod(row_num)
-    rows_num_to_make = column_num + 1 unless surplus_num.zero?
+    rows_num_to_make, surplus_num = element_count.divmod(row_num)
+    rows_num_to_make += 1 unless surplus_num.zero?
     output_arrays = Array.new(rows_num_to_make) { [] }
 
     sort_filename.each_with_index do |v, i|
