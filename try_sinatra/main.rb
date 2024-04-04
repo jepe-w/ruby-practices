@@ -5,18 +5,17 @@ get '/' do
 	erb :index
 end
 
-get '/path/to' do
-	"this is [/path/to]"
-end	
-
-get '/hello/*' do |name|
-	"hello #{name}. how are you?"
-end
-
-get '/items' do |number|
+get '/items' do 
 	erb :items
 end
 
+get '/new' do 
+	erb :new_memo
+end
+
+get '/items/edit' do 
+	erb :edit
+end
 
 # get '/erb_template_page' do
 # 	erb :erb_template_page

@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
-</head>
+
+<ul>
+
+	<% @items.each_with_index do |item, i| %>
+		<li data-id= "<%= memo['id'] %>">
+			<a href="/index/<%= memo['id'] %>">
+				<%= memo['title'] %>
+			</a>
+		</li>
+		<% end %>
+
+</ul>
+<title>メモ一覧</title>
 <body>
 	<div>
 		<head>メモアプリ</head>
