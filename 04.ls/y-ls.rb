@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require 'debug'
 
 def option
   ARGV.getopts('a')
@@ -11,6 +10,7 @@ end
 def filenames(option_item)
   if option_item['a']
     array = Dir.foreach('.').sort_by { |item| item.downcase.delete('.') }
+    debugger
     case array
     in ['..', '.', *v] then ['.', '..', *v]
     else
