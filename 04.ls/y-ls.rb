@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'debug'
 
 def option
   ARGV.getopts('a')
@@ -9,9 +10,14 @@ end
 
 def filenames(option_item)
   if option_item['a']
-    Dir.foreach('.').sort_by { |item| item.downcase.delete('.') }
+    array = Dir.foreach('.').sort_by { |item| item.downcase.delete('.') }
+    case array
+    in ['..', '.', *v] then ['.', '..', *v]
+    else
+      array
+    end
   else
-    Dir.foreach('.').reject { _1.start_with?('.') }.sort_by { |item| item.downcase.delete('.') }
+    Dir.foreach('.').reject { _1.start_with?('.') }.sort_by(&:downcase)
   end
 end
 
@@ -29,6 +35,6 @@ end
 
 option_item = option
 sorted_filenames = filenames(option_item)
-ROW_LENGTH = 3
+ROW_LENGTH = 4
 
 output_filenames(ROW_LENGTH, sorted_filenames)
