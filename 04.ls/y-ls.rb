@@ -3,22 +3,9 @@
 
 require 'optparse'
 
-def option
-  ARGV.getopts('a')
-end
-
-def filenames(option_item)
-  if option_item['a']
-    array = Dir.foreach('.').sort_by { |item| item.downcase.delete('.') }
-    debugger
-    case array
-    in ['..', '.', *v] then ['.', '..', *v]
-    else
-      array
-    end
-  else
-    Dir.foreach('.').reject { _1.start_with?('.') }.sort_by(&:downcase)
-  end
+def filenames
+  option_item = ARGV.getopts('a')
+  option_item['a'] ? Dir.foreach('.').sort : Dir.foreach('.').reject { _1.start_with?('.') }.sort
 end
 
 def output_filenames(row_length, sorted_filenames)
@@ -33,8 +20,5 @@ def output_filenames(row_length, sorted_filenames)
   matrix_to_display.each { puts _1.join('  ') }
 end
 
-option_item = option
-sorted_filenames = filenames(option_item)
 ROW_LENGTH = 4
-
-output_filenames(ROW_LENGTH, sorted_filenames)
+output_filenames(ROW_LENGTH, filenames)
