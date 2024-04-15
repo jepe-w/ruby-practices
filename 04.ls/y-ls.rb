@@ -5,7 +5,7 @@ require 'optparse'
 
 def filenames
   options = ARGV.getopts('a')
-  target_filenames = Dir.foreach('.').to_a
+  target_filenames = Dir.entries('.')
   target_filenames.reject! { _1.start_with?('.') } unless options['a']
   target_filenames.sort
 end
