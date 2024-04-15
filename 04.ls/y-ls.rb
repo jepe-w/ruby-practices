@@ -4,8 +4,10 @@
 require 'optparse'
 
 def filenames
-  option_item = ARGV.getopts('a')
-  option_item['a'] ? Dir.foreach('.').sort : Dir.foreach('.').reject { _1.start_with?('.') }.sort
+  options = ARGV.getopts('a')
+  target_filenames = Dir.foreach('.').to_a
+  target_filenames.reject! { _1.start_with?('.') } unless options['a']
+  target_filenames.sort
 end
 
 def output_filenames(row_length, filenames)
@@ -20,5 +22,5 @@ def output_filenames(row_length, filenames)
   matrix_to_display.each { puts _1.join('  ') }
 end
 
-ROW_LENGTH = 4
+ROW_LENGTH = 3
 output_filenames(ROW_LENGTH, filenames)
