@@ -1,19 +1,31 @@
 require 'sinatra'
 require 'sinatra/reloader'
 
+# def set_memos(file_path, memos)
+#   File.open(file_path, 'w') { |f| JSON.dump(memos, f) }
+# end
+
 get '/' do
+	redirect '/memos'
+end
+
+get '/memos' do
+	@memos = get_memos(FILE_PATH)
 	erb :index
 end
 
-get '/items' do 
-	erb :items
-end
-
-get '/new' do 
+get '/memos/new' do
 	erb :new_memo
 end
 
-get '/items/edit' do 
+get '/memos/:id' do
+	memos = get_memos(FILE_PATH)
+	@title = memos[parms[:id]]['title']
+	@content = memos[parms[:id]]['content']
+	erb :memo
+end
+
+get '/memos/memo/edit' do
 	erb :edit
 end
 
