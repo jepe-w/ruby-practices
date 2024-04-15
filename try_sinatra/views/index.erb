@@ -1,30 +1,27 @@
 
 <ul>
-
-	<% @items.each_with_index do |item, i| %>
-		<li data-id= "<%= memo['id'] %>">
-			<a href="/index/<%= memo['id'] %>">
-				<%= memo['title'] %>
-			</a>
+	<% @memos.each do |id, post| %>
+		<li>
+				<a href='/memos/<%= id %>'><%= memo['title'] %></a>
 		</li>
 		<% end %>
-
 </ul>
-<title>メモ一覧</title>
-<body>
-	<div>
-		<head>メモアプリ</head>
-		<div style="float: right; padding:2px 3px">
-			<button>追加</button>
-		</div>
-	</div>
-	<div>
-		<ul>
-		<li>メモ１</li>
-		<li>メモ２</li>
-		<li>メモ３</li>
-		<li>メモ４</li>
-		</ul>
-	</div>
-</body>
-</html>
+
+# <title>メモ一覧</title>
+# <body>
+# 	<div>
+# 		<head>メモアプリ</head>
+# 		<div style="float: right; padding:2px 3px">
+# 			<button>追加</button>
+# 		</div>
+# 	</div>
+# 	<div>
+# 		<ul>
+# 		<li>メモ１</li>
+# 		<li>メモ２</li>
+# 		<li>メモ３</li>
+# 		<li>メモ４</li>
+# 		</ul>
+# 	</div>
+# </body>
+# </html>

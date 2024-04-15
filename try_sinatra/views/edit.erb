@@ -1,4 +1,4 @@
-<h2>Eddit memo</h2>
+<h2>Edit memo</h2>
 <form method="post" action="/memo/edit/<%= @memo['id'] %>">
 	<input type="text" name="title" class="memo-title border" value="<%= @memo['title'] %>">
 	<textarea name="body" class="memo-body border"><%= @memo['body'] %></textarea>
