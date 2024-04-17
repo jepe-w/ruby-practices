@@ -4,10 +4,12 @@
 require 'optparse'
 
 def filenames
-  options = ARGV.getopts('a')
+  options = ARGV.getopts('ar')
   target_filenames = Dir.entries('.')
   target_filenames.reject! { _1.start_with?('.') } unless options['a']
-  target_filenames.sort
+  target_filenames.sort!
+  target_filenames.reverse! if options['r']
+  target_filenames
 end
 
 def output_filenames(row_length, filenames)
