@@ -1,7 +1,15 @@
 <h2>Edit memo</h2>
-<form method="post" action="/memo/edit/<%= @memo['id'] %>">
-	<input type="text" name="title" class="memo-title border" value="<%= @memo['title'] %>">
-	<textarea name="body" class="memo-body border"><%= @memo['body'] %></textarea>
-    <input type="hidden" name="_method" value="PATCH">
-	<input type="submit" value="edit done" class="button add">
+<form method="post" action="/memos/<%= params[:id] %>">
+<div>
+	<h3>タイトル</h3>
+	<input type="text" id="title" name="title" value="<%= @title %>">
+</div>
+<div>
+	<h3>内容</h3>
+	<textarea id="content" name="content"><%= @content %></textarea>
+</div>
+<div>
+	<input type="hidden" name="_method" value="patch">
+	<input type="submit" value="保存">
+</div>
 </form>

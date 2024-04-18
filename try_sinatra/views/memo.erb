@@ -1,7 +1,14 @@
 <div>
-	<p><%= @title %></p>
+<h4 style='color:gray'>タイトル</h4>
+<p><%= @title %></p>
 
+<h4 style='color:gray'>内容</h4>
 	<p><%= @content %></p>
+</div>
+<div>
+	<form action="/memos/<%= params[:id] %>/edit" method="get">
+		<input type="submit" value="編集">
+	</form>
 </div>
 <div>
 	<a href="/memos">メモ一覧に戻る</a>

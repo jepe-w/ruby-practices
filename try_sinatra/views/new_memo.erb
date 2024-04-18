@@ -1,14 +1,15 @@
 
-<h2>新規memo</h2>
+<h3 style='color:red'>新しいメモを作成</h3>
 <div>
 <form action="/memos" method="post">
 	<p>タイトル：<br>
 		<input type="text" name="title" placeholder="学習メモ">
 	</p>
 	<p>メモ内容：<br>
-		<textarea cols="30" rows="10" placeholder="内容を記述"></textarea>
+		<textarea cols="30" rows="10" name="content" id="content" placeholder="内容を記述"></textarea>
 	</p>
 	<p>
+		<a href="/memos">戻る</a>
 		<input type="submit" value="保存" id="submit_button">
 	</p>
 	</form>

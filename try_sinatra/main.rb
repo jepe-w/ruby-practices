@@ -51,16 +51,17 @@ get '/memos/:id/edit' do
 	erb :edit
 end
 
+patch '/memos/:id' do
+  title = params[:title]
+  content = params[:content]
 
+  memos = get_memos(FILE_PATH)
+  memos[params[:id]] = { 'title' => title, 'content' => content }
+  set_memos(FILE_PATH, memos)
 
-# get '/erb_template_page' do
-# 	erb :erb_template_page
-# end
+  redirect "/memos/#{params[:id]}"
+end
 
-# get '/markdown_template_page' do
-# 	markdown :markdown_template_page
-# end
-
-# get '/erb_and_md_template_page' do
-# 	erb :erb_and_md_template_page
+# patch '/memo/1' do
+#   "Hello World"
 # end
