@@ -5,10 +5,10 @@ require 'optparse'
 require 'time'
 require 'etc'
 
-def option_item
+def fetch_options
   ARGV.getopts('arl')
 end
-options = option_item
+options = fetch_options
 
 def filenames(options)
   target_filenames = Dir.entries('.')
@@ -31,41 +31,50 @@ def output_filenames(row_length, sorted_filenames)
   matrix_to_display.each { puts _1.join('  ') }
 end
 
-def file_permissions(sorted_filenames)
-  filetypes = { '20' => 'c', '40' => 'd', '60' => 'b', '100' => '-', '120' => 'l', '140' => 's' }
-  permissiontype = { '7' => 'rwx', '6' => 'rw-', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--r', '0' => '---' }
-
+def file_permissions(sorted_filenames, file_type, permission_type)
   sorted_filenames.map do |filename|
     file = File.stat(filename)
     permission = file.mode.to_s(8)
+    type = file.ftype
     split_permission = permission[-3..].split('')
     split_permission.map.with_index do |item, i|
-      split_permission[i] = permissiontype[item]
+      split_permission[i] = permission_type[item]
     end
-    filetypes[permission[..-4]] + split_permission[0] + split_permission[1] + split_permission[2]
+    file_type[type] + split_permission[0] + split_permission[1] + split_permission[2]
   end
 end
-permissions = file_permissions(sorted_filenames)
 
-def output_file_details(sorted_filenames, permissions)
+def file_stats(sorted_filenames)
+  stats = sorted_filenames.map { |filename| File.stat(filename) }
+  stats.map do |file_stat|
+    {
+      link_size: file_stat.nlink.to_s,
+      file_size: file_stat.size.to_s,
+      user_name: Etc.getpwuid(file_stat.uid).name,
+      groupe_name: Etc.getgrgid(file_stat.gid).name,
+      file_block: file_stat.blocks,
+      last_update: Time.parse(file_stat.mtime.to_s).strftime('%b %e %H:%M')
+    }
+  end
+end
+
+def output_file_stats(sorted_filenames, file_stats, permissions)
   block = 0
-  file_detail = sorted_filenames.map { |filename| File.stat(filename) }
-  links_width = file_detail.map { |item| item.nlink.to_s.length }.max
-  file_size_width = file_detail.map { |item| item.size.to_s.length }.max
-  user_name_width = file_detail.map { |item| Etc.getpwuid(item.uid).name.length }.max
-  groupe_name_width = file_detail.map { |item| Etc.getgrgid(item.gid).name.length }.max
+  links_width = file_stats.map { |stat| stat[:link_size].length }.max
+  file_size_width = file_stats.map { |stat| stat[:file_size].length }.max
+  user_name_width = file_stats.map { |stat| stat[:user_name].length }.max
+  groupe_name_width = file_stats.map { |stat| stat[:groupe_name].length }.max
   matrix_to_display = Array.new(sorted_filenames.length) { [] }
 
-  sorted_filenames.map.with_index do |filename, index|
-    file = File.stat(filename)
-    link_size = file.nlink.to_s.rjust(links_width)
-    user_name = Etc.getpwuid(file.uid).name.ljust(user_name_width)
-    groupe_name = Etc.getgrgid(file.gid).name.ljust(groupe_name_width)
-    file_size = file.size.to_s.rjust(file_size_width)
-    block += file.blocks / 2
-    last_update = Time.parse(file.mtime.to_s).strftime('%b %e %H:%M')
+  file_stats.map.with_index do |filestat, index|
+    link_size = filestat[:link_size].rjust(links_width)
+    user_name = filestat[:user_name].ljust(user_name_width)
+    groupe_name = filestat[:groupe_name].ljust(groupe_name_width)
+    file_size = filestat[:file_size].rjust(file_size_width)
+    block += filestat[:file_block] / 2
+    last_update = filestat[:last_update]
     permission = permissions[index]
-
+    filename = sorted_filenames[index]
     matrix_to_display[index].push(permission, link_size, user_name, groupe_name, file_size, last_update, filename)
   end
 
@@ -74,8 +83,12 @@ def output_file_details(sorted_filenames, permissions)
 end
 
 ROW_LENGTH = 3
+FILE_TYPE = { 'file' => '-', 'directory' => 'd', 'characterSpecial' => 'c', 'blockSpecial' => 'b', 'fifo' => 'p', 'link' => 'l', 'socket' => 's' }.freeze
+PERMISSION_TYPE = { '7' => 'rwx', '6' => 'rw-', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--r', '0' => '---' }.freeze
 if options['l']
-  output_file_details(sorted_filenames, permissions)
+  file_stats = file_stats(sorted_filenames)
+  permissions = file_permissions(sorted_filenames, FILE_TYPE, PERMISSION_TYPE)
+  output_file_stats(sorted_filenames, file_stats, permissions)
 else
   output_filenames(ROW_LENGTH, sorted_filenames)
 end
