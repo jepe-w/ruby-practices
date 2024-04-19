@@ -1,16 +1,16 @@
 
-<h3 style='color:red'>新しいメモを作成</h3>
+<h3 style='color:#444'>新しいメモを作成</h3>
 <div>
 <form action="/memos" method="post">
-	<p>タイトル：<br>
-		<input type="text" name="title" placeholder="学習メモ">
+	<p style='color: #444'>タイトル<br>
+		<input type="text" name="title" placeholder="タイトルを記述" style='border:1px solid #aaa; border-radius:3px; color:444'>
 	</p>
-	<p>メモ内容：<br>
-		<textarea cols="30" rows="10" name="content" id="content" placeholder="内容を記述"></textarea>
+	<p style='color: #444'>メモ内容<br>
+		<textarea cols="30" rows="10" name="content" id="content" placeholder="内容を記述" style='border:1px solid #aaa; border-radius:3px; color:444'></textarea>
 	</p>
 	<p>
-		<a href="/memos">戻る</a>
-		<input type="submit" value="保存" id="submit_button">
+		<a href="/memos" style='color:#666; text-decoration: none;'> ≪ 戻る</a>
+		<input type="submit" value="保存" id="submit_button" style='border:1px solid #999; background-color:#999; color:white; padding:2px 5px; border-radius:5px; text-decoration: none;'>
 	</p>
 	</form>
 </div>
