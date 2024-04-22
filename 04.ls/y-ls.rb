@@ -5,10 +5,10 @@ require 'optparse'
 require 'time'
 require 'etc'
 
-def fetch_options
-  ARGV.getopts('arl')
-end
-options = fetch_options
+ROW_LENGTH = 3
+FILE_TYPE = { 'file' => '-', 'directory' => 'd', 'characterSpecial' => 'c', 'blockSpecial' => 'b', 'fifo' => 'p', 'link' => 'l', 'socket' => 's' }.freeze
+PERMISSION_TYPE = { '7' => 'rwx', '6' => 'rw-', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--r', '0' => '---' }.freeze
+options = ARGV.getopts('arl')
 
 def filenames(options)
   target_filenames = Dir.entries('.')
@@ -82,9 +82,6 @@ def output_file_stats(sorted_filenames, file_stats, permissions)
   matrix_to_display.each { |item| puts item.join(' ') }
 end
 
-ROW_LENGTH = 3
-FILE_TYPE = { 'file' => '-', 'directory' => 'd', 'characterSpecial' => 'c', 'blockSpecial' => 'b', 'fifo' => 'p', 'link' => 'l', 'socket' => 's' }.freeze
-PERMISSION_TYPE = { '7' => 'rwx', '6' => 'rw-', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--r', '0' => '---' }.freeze
 if options['l']
   file_stats = file_stats(sorted_filenames)
   permissions = file_permissions(sorted_filenames)
