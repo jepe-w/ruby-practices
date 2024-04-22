@@ -19,9 +19,9 @@ def filenames(options)
 end
 sorted_filenames = filenames(options)
 
-def output_filenames(row_length, sorted_filenames)
+def output_filenames(sorted_filenames)
   max_filename_length = sorted_filenames.map(&:length).max
-  column_length = sorted_filenames.length.ceildiv(row_length)
+  column_length = sorted_filenames.length.ceildiv(ROW_LENGTH)
   matrix_to_display = Array.new(column_length) { [] }
 
   sorted_filenames.each_with_index do |v, i|
@@ -31,16 +31,16 @@ def output_filenames(row_length, sorted_filenames)
   matrix_to_display.each { puts _1.join('  ') }
 end
 
-def file_permissions(sorted_filenames, file_type, permission_type)
+def file_permissions(sorted_filenames)
   sorted_filenames.map do |filename|
     file = File.stat(filename)
     permission = file.mode.to_s(8)
     type = file.ftype
     split_permission = permission[-3..].split('')
     split_permission.map.with_index do |item, i|
-      split_permission[i] = permission_type[item]
+      split_permission[i] = PERMISSION_TYPE[item]
     end
-    file_type[type] + split_permission[0] + split_permission[1] + split_permission[2]
+    FILE_TYPE[type] + split_permission[0] + split_permission[1] + split_permission[2]
   end
 end
 
@@ -87,8 +87,8 @@ FILE_TYPE = { 'file' => '-', 'directory' => 'd', 'characterSpecial' => 'c', 'blo
 PERMISSION_TYPE = { '7' => 'rwx', '6' => 'rw-', '5' => 'r-x', '4' => 'r--', '3' => '-wx', '2' => '-w-', '1' => '--r', '0' => '---' }.freeze
 if options['l']
   file_stats = file_stats(sorted_filenames)
-  permissions = file_permissions(sorted_filenames, FILE_TYPE, PERMISSION_TYPE)
+  permissions = file_permissions(sorted_filenames)
   output_file_stats(sorted_filenames, file_stats, permissions)
 else
-  output_filenames(ROW_LENGTH, sorted_filenames)
+  output_filenames(sorted_filenames)
 end
