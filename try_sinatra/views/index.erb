@@ -1,12 +1,12 @@
 
 <div>
-	<a style='border:1px solid #999; background-color:white; color:#444; padding:2px 5px; border-radius:5px; text-decoration: none;' href="/memos/new" >新規作成</a>
-</div>
-<ul>
+<h3 class="title-font">メモ一覧</h3>
+	<ul>
 	<% @memos.each do |id, post|	%>
-		<li>
-			<a href="/memos/<%= id %>"><%= post['title'] %></a>
+		<li style="margin-bottom:5px;">
+		<a class="title-font link-text" href="/memos/<%= id %>"><%= CGI.escapeHTML(post['title']) %></a>
 		</li>
-	<% end %>
-</ul>
-
+		<% end %>
+	</ul>
+			<a class="new-memo" href="/memos/new">	<span class="button new">＋</span> メモを追加</a>
+</div>

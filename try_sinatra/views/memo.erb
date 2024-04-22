@@ -1,15 +1,22 @@
 <div>
-<h4 style='color:gray'>タイトル</h4>
-<p><%= @title %></p>
 
-<h4 style='color:gray'>内容</h4>
-	<p><%= @content %></p>
+	<h4 class="title-font">タイトル
+		<p class="text-font"><%= CGI.escapeHTML(@title) %></p>
+	</h4>
+
+	<h4 class="title-font">内容
+		<p class="text-font"><%= CGI.escapeHTML(@content) %></p>
+	</h4>
 </div>
-<div>
+<p>
 	<form action="/memos/<%= params[:id] %>/edit" method="get">
-		<input type="submit" value="編集">
+		<input class="button submit" type="submit" value="内容を編集する">
 	</form>
-</div>
-<div>
-	<a href="/memos">メモ一覧に戻る</a>
-</div>
+</p>
+<p>
+	<form action="/memos/<%= params[:id] %>" method="post">
+		<input type="hidden" name="_method" value="delete">
+		<input class="button delete" type="submit" value="削除">
+	</form>
+</p>
+<a class="text-font link-text" href="/memos">≪メモ一覧に戻る</a>
