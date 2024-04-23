@@ -7,9 +7,9 @@
   <h4 class="text-font">内容</h4>
   <textarea class="text-box text-font" cols="30" rows="10" id="content" name="content"><%= @content %></textarea>
 </div>
-</form>
 <div>
-  <input type="hidden" name="_method" value="patch">
-  <input class="button submit" type="submit" value="保存">
+<input type="hidden" name="_method" value="patch">
+<input type="submit" value="保存" class="button submit">
 </div>
+</form>
 <a class="text-font link-text" href="/memos/<%= params[:id] %>">≪メモに戻る</a>
