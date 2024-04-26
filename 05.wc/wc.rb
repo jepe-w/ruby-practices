@@ -2,15 +2,15 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require 'debug'
 
 option = ARGV.getopts('lwc')
 filename = ARGV
 
-def input_pattern(option)
+def standard_input(option)
   words_width = 7
   gets_file = readlines
   gets_file = gets_file.join('')
+
   chars_in_file = gets_file.bytesize.to_s
   lines_in_file = gets_file.lines.length.to_s
   words_in_file = gets_file.split.count.to_s
@@ -60,5 +60,5 @@ if !filename.empty?
   display_values(filename, file_read, option, words_width)
   display_totals(file_read, option, words_width) if filename.length > 1
 else
-  input_pattern(option)
+  standard_input(option)
 end
