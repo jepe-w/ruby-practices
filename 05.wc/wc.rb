@@ -3,62 +3,65 @@
 
 require 'optparse'
 
-option = ARGV.getopts('lwc')
-filename = ARGV
+def main
+  options = ARGV.getopts('lwc')
+  filename = ARGV
+  option_values = { 'l' => 0, 'w' => 0, 'c' => 0 }
 
-def standard_input(option)
+  if !filename.empty?
+    file_read = filename.map { |file| File.read(file) }
+    words_width = file_read.map { |file_detail| file_detail.bytesize.to_s }.max.length
+    display_values(filename, file_read, options, words_width)
+    display_totals(option_values, file_read, options, words_width) if filename.length > 1
+  else
+    standard_input(options)
+  end
+end
+
+def standard_input(options)
   words_width = 7
   gets_file = readlines
   gets_file = gets_file.join('')
 
-  chars_in_file = gets_file.bytesize.to_s
-  lines_in_file = gets_file.lines.length.to_s
-  words_in_file = gets_file.split.count.to_s
-  option_values = { 'c' => chars_in_file, 'l' => lines_in_file, 'w' => words_in_file }
-  option_select = option.select { _2 == true }
-  use_option = option_select.empty? ? %w[l w c] : option_select.map { _1[0] }
-  display_value = use_option.length != 1 ? use_option.map { |item| option_values[item].rjust(words_width) } : [option_values[use_option[0]]]
-  puts display_value.join(' ')
+  result_of_option = result_of_options(gets_file, options, words_width)
+  puts result_of_option.join(' ')
 end
 
-def display_values(filename, file_read, option, words_width)
+def display_values(filename, file_read, options, words_width)
   matrix_to_display = Array.new(file_read.length) { [] }
-  file_read.map.with_index do |item, i|
-    chars_in_file = item.bytesize.to_s
-    lines_in_file = item.lines.length.to_s
-    words_in_file = item.split.count.to_s
-    option_values = { 'c' => chars_in_file, 'l' => lines_in_file, 'w' => words_in_file }
-    option_select = option.select { _2 == true }
-    use_option = option_select.empty? ? %w[l w c] : option_select.map { _1[0] }
-    display_value = use_option.length != 1 ? use_option.map { |item| option_values[item].rjust(words_width) } : [option_values[use_option[0]]]
-    display_value.map! { _1.rjust(words_width) } if filename.length > 1
-    matrix_to_display[i].push(display_value.push(filename[i]))
+  file_read.map.with_index do |file_detail, i|
+    result_of_option = result_of_options(file_detail, options, words_width)
+    if filename.length > 1
+      rjust_result_of_option = result_of_option.map { |value| value.rjust(words_width) }
+      matrix_to_display[i].push(rjust_result_of_option.push(filename[i]))
+    else
+      matrix_to_display[i].push(result_of_option.push(filename[i]))
+    end
   end
-  matrix_to_display.each { puts _1.join(' ') }
+  matrix_to_display.each { |display| puts display.join(' ') }
 end
 
-def display_totals(file_read, option, words_width)
-  total_l = 0
-  total_w = 0
-  total_c = 0
-  file_read.map do |item|
-    total_l += item.lines.length
-    total_w += item.split.count
-    total_c += item.bytesize
+def result_of_options(files, options, words_width)
+  chars_in_file = files.bytesize.to_s
+  lines_in_file = files.lines.length.to_s
+  words_in_file = files.split.count.to_s
+  option_values = { 'l' => lines_in_file, 'w' => words_in_file, 'c' => chars_in_file }
+  option_select = options.select { |_key, value| value }
+  use_option = option_select.empty? ? %w[l w c] : option_select.map { |option| option[0] }
+  use_option.length != 1 ? use_option.map { |option| option_values[option].rjust(words_width) } : [option_values[use_option[0]]]
+end
+
+def display_totals(option_values, file_read, options, words_width)
+  file_read.map do |file|
+    option_values['l'] += file.lines.length
+    option_values['w'] += file.split.count
+    option_values['c'] += file.bytesize
   end
-  option_values = { 'l' => total_l, 'w' => total_w, 'c' => total_c }
-  option_select = option.select { _2 == true }
-  use_option = option_select.empty? ? %w[l w c] : option_select.map { _1[0] }
-  display_total_values = use_option.map { |item| option_values[item].to_s.rjust(words_width) } if file_read.length > 1
+  option_select = options.select { |_key, value| value }
+  use_option = option_select.empty? ? %w[l w c] : option_select.map { |option| option[0] }
+  display_total_values = use_option.map { |option| option_values[option].to_s.rjust(words_width) } if file_read.length > 1
+
   puts display_total_values.push('total').join(' ')
 end
 
-if !filename.empty?
-  file_read = filename.map { File.read(_1) }
-  words_width = file_read.map { _1.bytesize.to_s }.max.length
-
-  display_values(filename, file_read, option, words_width)
-  display_totals(file_read, option, words_width) if filename.length > 1
-else
-  standard_input(option)
-end
+main
