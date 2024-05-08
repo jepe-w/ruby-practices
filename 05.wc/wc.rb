@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require 'debug'
 
 def main
   options = ARGV.getopts('lwc')
