@@ -14,7 +14,7 @@ def main
   end
 end
 
-def create_detail_hash(files)
+def create_detail_hashes(files)
   files.map.with_index do |file, i|
     file = File.read(file) if files.length > 1
     {
@@ -53,7 +53,7 @@ def display_totals(file_details, use_opts, words_width)
   puts total_values.push('total').join(' ')
 end
 
-def display_values(filenames, use_opts)
+def display_files_values(filenames, use_opts)
   file_details = filenames.map { |file| File.read(file) }
   words_width = file_details.map(&:bytesize).max.to_s.length
   detail_hash = create_detail_hash(filenames)
