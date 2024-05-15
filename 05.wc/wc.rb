@@ -8,7 +8,7 @@ def main
   filenames = ARGV
   use_opts = options.select { |_key, value| value }.empty? ? %w[l w c] : options.select { |_key, value| value }.keys
   if filenames.any?
-    display_values(filenames, use_opts)
+    display_files_values(filenames, use_opts)
   else
     display_inputted_values(use_opts)
   end
@@ -56,7 +56,7 @@ end
 def display_files_values(filenames, use_opts)
   file_details = filenames.map { |file| File.read(file) }
   words_width = file_details.map(&:bytesize).max.to_s.length
-  detail_hash = create_detail_hash(filenames)
+  detail_hash = create_detail_hashes(filenames)
   values = matrix_values(detail_hash, use_opts, words_width)
   use_opts.length > 1 ? values.each { |item| puts item.join(' ') } : values.each { |item| puts item }
   display_totals(file_details, use_opts, words_width) if filenames.length > 1
@@ -66,7 +66,7 @@ def display_inputted_values(use_opts)
   words_width = 7
   gets_inputted_values = readlines
   files = [gets_inputted_values.join('')]
-  detail_hash = create_detail_hash(files)
+  detail_hash = create_detail_hashes(files)
   display_values = values(detail_hash, use_opts, words_width)
   puts display_values.join(' ')
 end
