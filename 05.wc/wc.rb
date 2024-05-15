@@ -6,71 +6,69 @@ require 'optparse'
 def main
   options = ARGV.getopts('lwc')
   filenames = ARGV
-
+  use_opts = options.select { |_key, value| value }.empty? ? %w[l w c] : options.select { |_key, value| value }.keys
   if filenames.any?
-    file_details = filenames.map { |file| File.read(file) }
-    words_width = file_details.map { |detail| detail.bytesize.to_s }.max.length
-    display_values(filenames, file_details, options, words_width)
-    display_totals(file_details, options, words_width) if filenames.length > 1
+    display_values(filenames, use_opts)
   else
-    display_inputted_values(options)
+    display_inputted_values(use_opts)
   end
 end
 
-def display_inputted_values(options)
+def create_detail_hash(files)
+  files.map.with_index do |file, i|
+    file = File.read(file) if files.length > 1
+    {
+      'name' => files[i],
+      'c' => file.bytesize.to_s,
+      'l' => file.lines.length.to_s,
+      'w' => file.split.count.to_s
+    }
+  end
+end
+
+def matrix_values(detail_hash, use_opts, words_width)
+  if use_opts.length > 1
+    detail_hash.map { |hash| use_opts.map { |option| hash[option.to_s].rjust(words_width) }.push(hash['name']) }
+  else
+    detail_hash.map { |hash| "#{hash[use_opts[0].to_s]} #{hash[0]}" }
+  end
+end
+
+def values(detail_hash, use_opts, words_width)
+  if use_opts.length > 1
+    use_opts.map { |option| detail_hash[0][option.to_s].rjust(words_width) }
+  else
+    use_opts.map { |option| detail_hash[0][option.to_s] }
+  end
+end
+
+def display_totals(file_details, use_opts, words_width)
+  value_hash = { 'l' => 0, 'w' => 0, 'c' => 0 }
+  file_details.each do |detail|
+    value_hash['l'] += detail.lines.length
+    value_hash['w'] += detail.split.count
+    value_hash['c'] += detail.bytesize
+  end
+  total_values = use_opts.length > 1 ? use_opts.map { |option| value_hash[option].to_s.rjust(words_width) } : use_opts.map { |option| value_hash[option] }
+  puts total_values.push('total').join(' ')
+end
+
+def display_values(filenames, use_opts)
+  file_details = filenames.map { |file| File.read(file) }
+  words_width = file_details.map(&:bytesize).max.to_s.length
+  detail_hash = create_detail_hash(filenames)
+  values = matrix_values(detail_hash, use_opts, words_width)
+  use_opts.length > 1 ? values.each { |item| puts item.join(' ') } : values.each { |item| puts item }
+  display_totals(file_details, use_opts, words_width) if filenames.length > 1
+end
+
+def display_inputted_values(use_opts)
   words_width = 7
   gets_inputted_values = readlines
-  input_values = gets_inputted_values.join('')
-
-  option_values = obtained_option_value(input_values, options, words_width)
-  puts option_values.join(' ')
-end
-
-def display_values(filenames, file_details, options, words_width)
-  matrix_to_display = Array.new(file_details.length) { [] }
-  file_details.map.with_index do |file_detail, i|
-    option_values = obtained_option_value(file_detail, options, words_width)
-    if filenames.length > 1
-      rjust_result_of_option = option_values.map { |value| value.rjust(words_width) }
-      matrix_to_display[i].push(rjust_result_of_option.push(filenames[i]))
-    else
-      matrix_to_display[i].push(option_values.push(filenames[i]))
-    end
-  end
-  matrix_to_display.each { |display| puts display.join(' ') }
-end
-
-def obtained_option_value(files, options, words_width)
-  chars = files.bytesize.to_s
-  lines = files.lines.length.to_s
-  words = files.split.count.to_s
-  use_option = options.select { |_key, value| value }.keys
-  options_hash = {}
-  use_option.each do |option|
-    case option
-    when 'l' then options_hash['l'] = lines
-    when 'w' then options_hash['w'] = words
-    when 'c' then options_hash['c'] = chars
-    end
-  end
-  if use_option.empty?
-    use_option = %w[l w c]
-    options_hash = { 'l' => lines, 'w' => words, 'c' => chars }
-  end
-  options_hash.length > 1 ? use_option.map { |option| options_hash[option].rjust(words_width) } : [options_hash[use_option[0]]]
-end
-
-def display_totals(file_details, options, words_width)
-  options_hash = { 'l' => 0, 'w' => 0, 'c' => 0 }
-  file_details.each do |detail|
-    options_hash['l'] += detail.lines.length
-    options_hash['w'] += detail.split.count
-    options_hash['c'] += detail.bytesize
-  end
-  use_option = options.select { |_key, value| value }.keys
-  use_option = %w[l w c] if use_option.empty?
-  display_total_values = use_option.map { |option| options_hash[option].to_s.rjust(words_width) } if file_details.length > 1
-  puts display_total_values.push('total').join(' ')
+  files = [gets_inputted_values.join('')]
+  detail_hash = create_detail_hash(files)
+  display_values = values(detail_hash, use_opts, words_width)
+  puts display_values.join(' ')
 end
 
 main
