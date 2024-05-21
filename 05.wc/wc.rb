@@ -6,69 +6,64 @@ require 'optparse'
 def main
   options = ARGV.getopts('lwc')
   filenames = ARGV
-  use_opts = options.select { |_key, value| value }.empty? ? %w[l w c] : options.select { |_key, value| value }.keys
+  use_opts = options.select { |_key, value| value }.keys
+  use_opts = %w[l w c] if use_opts.empty?
+
   if filenames.any?
-    display_files_values(filenames, use_opts)
+    display_values = display_files_values(filenames, use_opts)
+    display_values.each { |value| use_opts.length >= 2 ? (puts value.join(' ')) : (puts value) }
   else
-    display_inputted_values(use_opts)
+    gets_inputted_values = readlines
+    input_text = gets_inputted_values.join('')
+    display_values = display_files_values(input_text, use_opts)
+    puts display_values.join(' ')
   end
 end
 
-def create_detail_hashes(files)
-  files.map.with_index do |file, i|
-    file = File.read(file) if files.length > 1
-    {
-      'name' => files[i],
-      'c' => file.bytesize.to_s,
-      'l' => file.lines.length.to_s,
-      'w' => file.split.count.to_s
-    }
-  end
-end
-
-def matrix_values(detail_hash, use_opts, words_width)
-  if use_opts.length > 1
-    detail_hash.map { |hash| use_opts.map { |option| hash[option.to_s].rjust(words_width) }.push(hash['name']) }
+def display_files_values(files, use_opts)
+  if files.instance_of?(String)
+    handle_standard_input(files, use_opts)
   else
-    detail_hash.map { |hash| "#{hash[use_opts[0].to_s]} #{hash[0]}" }
+    handle_multiple_files(files, use_opts)
   end
 end
 
-def values(detail_hash, use_opts, words_width)
-  if use_opts.length > 1
-    use_opts.map { |option| detail_hash[0][option.to_s].rjust(words_width) }
+def handle_standard_input(files, use_opts)
+  file_details = files
+  detail_hash = create_detail_hash(file_details, 'input')
+  create_display_values(detail_hash, use_opts)
+end
+
+def handle_multiple_files(files, use_opts)
+  file_details = files.map { |file| File.read(file) }
+  if files.length >= 2
+    file_details.push(file_details.join(''))
+    files.push('total')
+  end
+  detail_hash = file_details.map.with_index { |filedetail, index| create_detail_hash(filedetail, files[index]) }
+  words_width = detail_hash.map { |hash| hash.select { |_key, value| value.instance_of?(Integer) }.values.max }.max.to_s.length
+  words_width = 0 if detail_hash.length <= 1 && use_opts.length <= 1
+  create_display_values(detail_hash, use_opts, words_width)
+end
+
+def create_detail_hash(filedetails, filename)
+  {
+    'name' => filename,
+    'c' => filedetails.bytesize,
+    'l' => filedetails.lines.length,
+    'w' => filedetails.split.count
+  }
+end
+
+def create_display_values(detail_hash, use_opts, words_width = 0)
+  standard_input_data = detail_hash.instance_of?(Hash)
+  if standard_input_data
+    use_opts.map { |option| detail_hash[option.to_s] }
+  elsif use_opts.length >= 2
+    detail_hash.map { |hash| use_opts.map { |option| hash[option.to_s].to_s.rjust(words_width) }.push(hash['name']) }
   else
-    use_opts.map { |option| detail_hash[0][option.to_s] }
+    detail_hash.map { |hash| "#{hash[use_opts[0].to_s].to_s.rjust(words_width)} #{hash['name']}" }
   end
-end
-
-def display_totals(file_details, use_opts, words_width)
-  value_hash = { 'l' => 0, 'w' => 0, 'c' => 0 }
-  file_details.each do |detail|
-    value_hash['l'] += detail.lines.length
-    value_hash['w'] += detail.split.count
-    value_hash['c'] += detail.bytesize
-  end
-  total_values = use_opts.length > 1 ? use_opts.map { |option| value_hash[option].to_s.rjust(words_width) } : use_opts.map { |option| value_hash[option] }
-  puts total_values.push('total').join(' ')
-end
-
-def display_files_values(filenames, use_opts)
-  file_details = filenames.map { |file| File.read(file) }
-  words_width = file_details.map(&:bytesize).max.to_s.length
-  detail_hash = create_detail_hashes(filenames)
-  values = matrix_values(detail_hash, use_opts, words_width)
-  use_opts.length > 1 ? values.each { |item| puts item.join(' ') } : values.each { |item| puts item }
-  display_totals(file_details, use_opts, words_width) if filenames.length > 1
-end
-
-def display_inputted_values(use_opts)
-  words_width = 7
-  gets_inputted_values = readlines
-  files = [gets_inputted_values.join('')]
-  detail_hash = create_detail_hashes(files)
-  display_values = values(detail_hash, use_opts, words_width)
-  puts display_values.join(' ')
 end
 
 main
