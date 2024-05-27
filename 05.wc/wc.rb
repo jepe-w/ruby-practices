@@ -5,50 +5,50 @@ require 'optparse'
 
 def main
   options = ARGV.getopts('lwc')
-  if options.values.uniq.length == 1
-    options = options.each_key do |key|
-      options[key] = true
-    end
-  end
+  options.transform_values! { true } if options.values.all? { |value| value == false }
   filenames = ARGV
 
   if filenames.any?
     handle_multiple_files(filenames, options)
   else
-    inputted_values = readlines
-    input_text = inputted_values.join('')
-    handle_standard_input(input_text, options)
+    text = readlines.join('')
+    handle_standard_input(text, options)
   end
 end
 
-def handle_standard_input(input_text, options)
-  detail_hash = create_detail_hash(input_text)
-  display_values([detail_hash], options)
+def handle_standard_input(text, options)
+  detail_hashes = create_detail_hash(text)
+  display_values([detail_hashes], options)
 end
 
 def handle_multiple_files(files, options)
-  file_texts = files.map do |file|
-    File.read(file)
+  detail_hashes = files.map do |file|
+    text = File.read(file)
+    detail = create_detail_hash(text)
+    detail['name'] = file
+    detail
   end
   if files.length >= 2
-    file_texts.push(file_texts.join(''))
-    files.push('total')
+    total = { 'name' => 'total' }
+    options.each_key do |option|
+      total[option.to_s] = detail_hashes.inject(0) do |sum, hash|
+        sum + hash[option.to_s]
+      end
+    end
+    detail_hashes << total
   end
-  detail_hash = file_texts.map.with_index do |file_text, index|
-    create_detail_hash(file_text, files[index])
-  end
-  words_width = create_words_width(detail_hash, options)
-  display_values(detail_hash, options, words_width)
+  words_width = create_words_width(detail_hashes, options)
+  display_values(detail_hashes, options, words_width)
 end
 
-def create_words_width(detail_hash, options)
-  numbers_hash = detail_hash.map do |hash|
+def create_words_width(detail_hashes, options)
+  numbers_hash = detail_hashes.map do |hash|
     hash.reject do |key, _value|
       key == 'name'
     end
   end
 
-  if detail_hash.length <= 1 && options.count do |_key, value|
+  if detail_hashes.length <= 1 && options.count do |_key, value|
     value == true
   end <= 1
     0
@@ -59,7 +59,7 @@ def create_words_width(detail_hash, options)
   end
 end
 
-def create_detail_hash(text, filename = 'default')
+def create_detail_hash(text, filename = '')
   {
     'name' => filename,
     'c' => text.bytesize,
@@ -74,7 +74,7 @@ def display_values(file_details, options, words_width = 0)
     columns << file_detail['l'].to_s.rjust(words_width) if options['l']
     columns << file_detail['w'].to_s.rjust(words_width) if options['w']
     columns << file_detail['c'].to_s.rjust(words_width) if options['c']
-    columns << file_detail['name'] if file_detail['name'] != 'default'
+    columns << file_detail['name'] if file_detail['name'] != ''
     puts columns.join(' ')
   end
 end
