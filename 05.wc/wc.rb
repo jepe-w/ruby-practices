@@ -5,7 +5,7 @@ require 'optparse'
 
 def main
   options = ARGV.getopts('lwc')
-  options.transform_values! { true } if options.values.all? { |value| value == false }
+  options.transform_values! { true } if options.values.all?(&:!)
   filenames = ARGV
 
   if filenames.any?
@@ -31,26 +31,28 @@ def handle_multiple_files(files, options)
   if files.length >= 2
     total = { 'name' => 'total' }
     options.each_key do |option|
-      total[option.to_s] = detail_hashes.inject(0) do |sum, hash|
-        sum + hash[option.to_s]
+      total[option] = detail_hashes.sum do |hash|
+        hash[option]
       end
     end
     detail_hashes << total
   end
-  words_width = create_words_width(detail_hashes, options)
-  display_values(detail_hashes, options, words_width)
+  width = calc_column_width(detail_hashes, options)
+  display_values(detail_hashes, options, width)
 end
 
-def create_words_width(detail_hashes, options)
+def calc_column_width(detail_hashes, options)
   numbers_hash = detail_hashes.map do |hash|
     hash.reject do |key, _value|
       key == 'name'
     end
   end
 
-  if detail_hashes.length <= 1 && options.count do |_key, value|
+  options_count = options.count do |_key, value|
     value == true
-  end <= 1
+  end
+
+  if detail_hashes.length <= 1 && options_count <= 1
     0
   else
     numbers_hash.map do |number|
@@ -68,12 +70,12 @@ def create_detail_hash(text, filename = '')
   }
 end
 
-def display_values(file_details, options, words_width = 0)
+def display_values(file_details, options, width = 0)
   file_details.each do |file_detail|
     columns = []
-    columns << file_detail['l'].to_s.rjust(words_width) if options['l']
-    columns << file_detail['w'].to_s.rjust(words_width) if options['w']
-    columns << file_detail['c'].to_s.rjust(words_width) if options['c']
+    columns << file_detail['l'].to_s.rjust(width) if options['l']
+    columns << file_detail['w'].to_s.rjust(width) if options['w']
+    columns << file_detail['c'].to_s.rjust(width) if options['c']
     columns << file_detail['name'] if file_detail['name'] != ''
     puts columns.join(' ')
   end
