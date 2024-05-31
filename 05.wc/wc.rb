@@ -5,13 +5,13 @@ require 'optparse'
 
 def main
   options = ARGV.getopts('lwc')
-  options.transform_values! { true } if options.values.all?(&:!)
+  options.transform_values!(&:!) if options.values.none?
   filenames = ARGV
 
   if filenames.any?
     handle_multiple_files(filenames, options)
   else
-    text = readlines.join('')
+    text = readlines.join
     handle_standard_input(text, options)
   end
 end
@@ -31,9 +31,7 @@ def handle_multiple_files(files, options)
   if files.length >= 2
     total = { 'name' => 'total' }
     options.each_key do |option|
-      total[option] = detail_hashes.sum do |hash|
-        hash[option]
-      end
+      total[option] = detail_hashes.sum { |hash| hash[option] }
     end
     detail_hashes << total
   end
@@ -42,12 +40,6 @@ def handle_multiple_files(files, options)
 end
 
 def calc_column_width(detail_hashes, options)
-  numbers_hash = detail_hashes.map do |hash|
-    hash.reject do |key, _value|
-      key == 'name'
-    end
-  end
-
   options_count = options.count do |_key, value|
     value == true
   end
@@ -55,9 +47,7 @@ def calc_column_width(detail_hashes, options)
   if detail_hashes.length <= 1 && options_count <= 1
     0
   else
-    numbers_hash.map do |number|
-      number.values.max
-    end.max.to_s.length
+    detail_hashes[-1]['c'].to_s.length
   end
 end
 
